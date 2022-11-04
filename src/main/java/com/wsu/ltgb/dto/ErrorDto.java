@@ -6,6 +6,14 @@ import lombok.Data;
 @Data
 @Builder
 public class ErrorDto {
-    public final int StatusCode;
+    public final Integer StatusCode;
     public final String Message;
+
+    public static ErrorDto Empty(){
+        return new ErrorDto(null, null);
+    }
+
+    public boolean IsEmpty() {
+        return this.Message == null && this.StatusCode == null;
+    }
 }

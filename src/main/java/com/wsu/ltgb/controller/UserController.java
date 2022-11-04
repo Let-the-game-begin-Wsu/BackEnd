@@ -2,6 +2,7 @@ package com.wsu.ltgb.controller;
 
 import com.wsu.ltgb.dto.LoginDto;
 import com.wsu.ltgb.dto.RegisterDto;
+import com.wsu.ltgb.service.JwtService;
 import com.wsu.ltgb.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,15 @@ public class UserController {
     @Autowired
     private UserService service;
 
+
     @PostMapping("login")
     public ResponseEntity<?> login(@RequestBody LoginDto loginDto){
         var result = service.Login(loginDto);
-        return ResponseEntity.status(200).body(result);
+        var err = result.getFirst();
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.StatusCode).body(err.Message);
+        }
+        return ResponseEntity.status(200).body(result.getSecond());
     }
 
     @PostMapping("register")

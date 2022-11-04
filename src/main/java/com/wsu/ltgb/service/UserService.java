@@ -6,38 +6,55 @@ import com.wsu.ltgb.dto.RegisterDto;
 import com.wsu.ltgb.model.UserEntity;
 import com.wsu.ltgb.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Date;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository repository;
+    @Autowired
+    private JwtService jwtService;
 
-    public String Login(LoginDto dto){
-        var user = repository.login(dto.getID(), dto.getPassword());
-        if (user == null){
-            return "실패";
+    public Pair<ErrorDto, String> Login(LoginDto dto){
+        if (dto == null){
+            return Pair.of(ErrorDto.builder().StatusCode(400).Message("dto is null").build(), "");
         }
-        return "성공";
+        var user = repository.login(dto.id);
+        if (user == null){
+            return Pair.of(ErrorDto.builder().StatusCode(404).Message("login failed").build(), "");
+        }
+        var pw = new String(Base64.getDecoder().decode(user.getPassword()), StandardCharsets.UTF_8);
+        if (!BCrypt.checkpw(dto.password, pw)){
+            return Pair.of(ErrorDto.builder().StatusCode(404).Message("login failed").build(), "");
+        }
+        var res = jwtService.CreateToken(user);
+        if (!res.getFirst().IsEmpty()) {
+            return Pair.of(res.getFirst(), "");
+        }
+        return  Pair.of(ErrorDto.Empty(), res.getSecond());
     }
 
     public ErrorDto Register(RegisterDto dto){
         if (dto == null){
             return ErrorDto.builder().StatusCode(400).Message("dto is null").build();
         }
-        if (!Idcheck(dto.Id) || !NicknameCheck(dto.NickName)){
+        if (!Idcheck(dto.id) || !NicknameCheck(dto.nickName)){
             return ErrorDto.builder().StatusCode(409).Message("check nickname or id").build();
         }
-        var password = Base64.getEncoder().encodeToString(BCrypt.hashpw(dto.Password, BCrypt.gensalt()).getBytes());
+        var password = Base64.getEncoder().encodeToString(BCrypt.hashpw(dto.password, BCrypt.gensalt()).getBytes());
         var entity = UserEntity.builder()
-                .id(dto.Id)
+                .id(dto.id)
                 .password(password)
-                .nickname(dto.NickName)
-                .phone(dto.Phone)
+                .nickname(dto.nickName)
+                .phone(dto.phone)
+                .uptime(new Date().getTime())
                 .build();
         repository.saveAndFlush(entity);
         return null;

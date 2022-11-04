@@ -25,4 +25,8 @@ public class UserEntity {
     private String nickname;
     @Column(name = "phone", nullable = false)
     private String phone;
+    @Column(name = "image")
+    private String image;
+    @Column(name = "uptime")
+    private long uptime;
 }
