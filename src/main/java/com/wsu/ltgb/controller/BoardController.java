@@ -15,7 +15,7 @@ public class BoardController {
     @Autowired
     private JwtService jwtService;
 
-    @PostMapping("create")
+    @PostMapping("write")
     public ResponseEntity<?> CreateBoard(@RequestHeader String auth, @RequestBody BoardRequestDto board) {
         var jwtResult = jwtService.ValidateToken(auth);
         var err = jwtResult.getFirst();
