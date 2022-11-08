@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class RegisterDto {
-    public final String id;
-    public final String password;
-    public final String nickName;
-    public final String phone;
+    private final String id;
+    private final String password;
+    private final String nickName;
+    private final String phone;
 }

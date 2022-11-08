@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class ErrorDto {
-    public final Integer StatusCode;
-    public final String Message;
+    private final Integer StatusCode;
+    private final String Message;
 
     public static ErrorDto Empty(){
         return new ErrorDto(null, null);

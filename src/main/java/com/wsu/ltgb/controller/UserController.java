@@ -23,7 +23,7 @@ public class UserController {
         var result = service.Login(loginDto);
         var err = result.getFirst();
         if (!err.IsEmpty()) {
-            return ResponseEntity.status(err.StatusCode).body(err.Message);
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
         }
         return ResponseEntity.status(200).body(result.getSecond());
     }
@@ -32,7 +32,7 @@ public class UserController {
     public  ResponseEntity<?> Register(@RequestBody RegisterDto registerDto) {
         var err = service.Register(registerDto);
         if (err != null){
-            return ResponseEntity.status(err.StatusCode).body(err.Message);
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
         }
         return ResponseEntity.ok().body(true);
     }
