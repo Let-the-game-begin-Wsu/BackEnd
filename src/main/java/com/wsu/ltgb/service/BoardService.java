@@ -13,7 +13,6 @@ import java.util.Date;
 
 @Service
 public class BoardService {
-
     @Autowired
     private BoardRepository repository;
     @Autowired
