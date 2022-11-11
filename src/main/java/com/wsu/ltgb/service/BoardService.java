@@ -3,6 +3,7 @@ package com.wsu.ltgb.service;
 import com.wsu.ltgb.dto.*;
 import com.wsu.ltgb.model.BoardEntity;
 import com.wsu.ltgb.persistence.BoardRepository;
+import com.wsu.ltgb.persistence.BoardTopicRepository;
 import com.wsu.ltgb.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -16,19 +17,26 @@ public class BoardService {
     private BoardRepository repository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private BoardTopicRepository topicRepository;
 
-    public ErrorDto CreateBoard(MemberDto memberDto, BoardRequestDto requestDto) {
+    public ErrorDto CreateBoard(MemberDto memberDto, BoardRequestDto requestDto, Long topicId) {
         if (requestDto == null) {
             return ErrorDto.builder().StatusCode(400).Message("bad req").build();
         }
         if (!userRepository.existsById(memberDto.getUser_id())){
             return ErrorDto.builder().StatusCode(404).Message("member not found").build();
         }
+        if (!topicRepository.existsById(topicId)){
+            return ErrorDto.builder().StatusCode(404).Message("topic not found").build();
+        }
         var memberEntity = userRepository.getReferenceById(memberDto.getUser_id());
+        var topicEntity = topicRepository.getReferenceById(topicId);
         var entity = BoardEntity.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getComment())
                 .user(memberEntity)
+                .topic(topicEntity)
                 .uptime(new Date().getTime())
                 .build();
         repository.saveAndFlush(entity);
@@ -60,12 +68,12 @@ public class BoardService {
         return Pair.of(ErrorDto.Empty(), response);
     }
 
-    public  Pair<ErrorDto, BoardListDto> GetBoardList(int listLimit, int pageIndex) {
+    public  Pair<ErrorDto, BoardListDto> GetBoardList(Long topicId, int listLimit, int pageIndex) {
         var offset = 0;
         if (pageIndex > 1){
             offset = (pageIndex -1) * listLimit;
         }
-        var list =repository.GetBoardList(listLimit, offset).stream().map(
+        var list =repository.GetBoardList(topicId, listLimit, offset).stream().map(
                 x -> BoardListItemDto.builder()
                         .userId(x.getUser().getUserId())
                         .userNick(x.getUser().getNickname())
