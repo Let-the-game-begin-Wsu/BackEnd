@@ -23,6 +23,9 @@ public class BoardEntity {
     @ManyToOne
     @JoinColumn(name="user_id")
     private UserEntity user;
+    @ManyToOne
+    @JoinColumn(name="board_topic_id")
+    private BoardTopicEntity topic;
     @Column(name = "uptime", nullable = false)
     private long uptime;
     @Column(name = "content", nullable = false)
