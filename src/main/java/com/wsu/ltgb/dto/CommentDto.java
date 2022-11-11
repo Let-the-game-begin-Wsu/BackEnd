@@ -8,4 +8,5 @@ public class CommentDto {
     public final String content;
     public final long board_id;
     public final long board_comment_id;
+
 }
