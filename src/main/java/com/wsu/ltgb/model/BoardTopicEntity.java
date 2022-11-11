@@ -24,6 +24,6 @@ public class BoardTopicEntity {
     private String description;
     @Column(name = "image")
     private String image;
-    @Column(name = "image", nullable = false)
+    @Column(name = "uptime", nullable = false)
     private long uptime;
 }

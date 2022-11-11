@@ -82,7 +82,7 @@ public class BoardService {
                         .title(x.getTitle())
                         .build()
         ).toList();
-        var count = repository.GetBoardCount();
+        var count = repository.GetBoardCount(topicId);
         var response = BoardListDto.builder().boardCount(count).items(list).pageIndex(pageIndex).build();
         return Pair.of(ErrorDto.Empty(), response);
     }

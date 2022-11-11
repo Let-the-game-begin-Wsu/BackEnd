@@ -10,8 +10,8 @@ import java.util.ArrayList;
 
 @Repository
 public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
-    @Query(value = "SELECT COUNT(*) FROM board;", nativeQuery = true)
-    Long GetBoardCount();
+    @Query(value = "SELECT COUNT(*) FROM board WHERE board_topic_id = :topicId", nativeQuery = true)
+    Long GetBoardCount(@Param("topicId")long topicId);
 
     @Query(value = "SELECT * FROM board WHERE board_topic_id = :topicId ORDER BY uptime DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
     ArrayList<BoardEntity> GetBoardList(@Param("topicId")long topicId, @Param("limit")int limit, @Param("offset")long offset);
