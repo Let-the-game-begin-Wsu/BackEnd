@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 @Builder
 public class MemberDto {
-    public final Long user_id;
-    public final String nickname;
-    public final String image;
+    private final Long user_id;
+    private final String nickname;
+    private final String image;
 
     public static MemberDto Empty(){
         return new MemberDto(null, null, null);

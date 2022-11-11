@@ -26,12 +26,12 @@ public class UserService {
         if (dto == null){
             return Pair.of(ErrorDto.builder().StatusCode(400).Message("dto is null").build(), "");
         }
-        var user = repository.login(dto.id);
+        var user = repository.login(dto.getId());
         if (user == null){
             return Pair.of(ErrorDto.builder().StatusCode(404).Message("login failed").build(), "");
         }
         var pw = new String(Base64.getDecoder().decode(user.getPassword()), StandardCharsets.UTF_8);
-        if (!BCrypt.checkpw(dto.password, pw)){
+        if (!BCrypt.checkpw(dto.getPassword(), pw)){
             return Pair.of(ErrorDto.builder().StatusCode(404).Message("login failed").build(), "");
         }
         var res = jwtService.CreateToken(user);
@@ -45,15 +45,15 @@ public class UserService {
         if (dto == null){
             return ErrorDto.builder().StatusCode(400).Message("dto is null").build();
         }
-        if (!Idcheck(dto.id) || !NicknameCheck(dto.nickName)){
+        if (!Idcheck(dto.getId()) || !NicknameCheck(dto.getNickName())){
             return ErrorDto.builder().StatusCode(409).Message("check nickname or id").build();
         }
-        var password = Base64.getEncoder().encodeToString(BCrypt.hashpw(dto.password, BCrypt.gensalt()).getBytes());
+        var password = Base64.getEncoder().encodeToString(BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt()).getBytes());
         var entity = UserEntity.builder()
-                .id(dto.id)
+                .id(dto.getId())
                 .password(password)
-                .nickname(dto.nickName)
-                .phone(dto.phone)
+                .nickname(dto.getNickName())
+                .phone(dto.getPhone())
                 .uptime(new Date().getTime())
                 .build();
         repository.saveAndFlush(entity);
