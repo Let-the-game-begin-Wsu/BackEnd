@@ -29,7 +29,7 @@ public class JwtService {
         var token = JWT.create()
                 .withIssuedAt(date)
                 .withExpiresAt(new Date(date.getTime() + 86400000))
-                .withClaim("user_id", user.getId())
+                .withClaim("user_id", user.getUser_id())
                 .withClaim("nickname", user.getNickname())
                 .withClaim("image", user.getImage())
                 .sign(algorithm);
@@ -39,7 +39,6 @@ public class JwtService {
     public Pair<ErrorDto, MemberDto> ValidateToken(String token){
         Algorithm algorithm = Algorithm.HMAC256(KEY); //use more secure key
         JWTVerifier verifier = JWT.require(algorithm)
-                .acceptExpiresAt(new Date().getTime())
                 .build(); //Reusable verifier instance
         DecodedJWT jwt;
         try{

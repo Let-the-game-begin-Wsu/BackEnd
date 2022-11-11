@@ -25,8 +25,8 @@ public class BoardService {
             return ErrorDto.builder().StatusCode(400).Message("bad req").build();
         }
         var memberEntity = userRepository.findById(memberDto.getUser_id());
-        if (memberEntity.isPresent()){
-            return ErrorDto.builder().StatusCode(403).Message("bad token").build();
+        if (memberEntity.isEmpty()){
+            return ErrorDto.builder().StatusCode(404).Message("member not found").build();
         }
 
         var entity = BoardEntity.builder()
@@ -62,6 +62,25 @@ public class BoardService {
                 .content(content)
                 .user(user)
                 .build();
+        return Pair.of(ErrorDto.Empty(), response);
+    }
+
+    public  Pair<ErrorDto, BoardListDto> GetBoardList(int listLimit, int pageIndex) {
+        var offset = 0;
+        if (pageIndex > 1){
+            offset = (pageIndex -1) * listLimit;
+        }
+        var list =repository.GetBoardList(listLimit, offset).stream().map(
+                x -> BoardListItemDto.builder()
+                        .userId(x.getUser().getUser_id())
+                        .userNick(x.getUser().getNickname())
+                        .uptime(x.getUptime())
+                        .id(x.getBoard_id())
+                        .title(x.getTitle())
+                        .build()
+        ).toList();
+        var count = repository.GetBoardCount();
+        var response = BoardListDto.builder().boardCount(count).items(list).pageIndex(pageIndex).build();
         return Pair.of(ErrorDto.Empty(), response);
     }
 }

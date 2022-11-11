@@ -23,10 +23,40 @@ public class BoardController {
             return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
         }
         var member = jwtResult.getSecond();
-        if (!boardService.CreateBoard(member, board).IsEmpty()) {
+        err = boardService.CreateBoard(member, board);
+        if (!err.IsEmpty()) {
             return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
         }
         return ResponseEntity.ok(true);
+    }
+
+    @GetMapping("get/{id}")
+    public ResponseEntity<?> GetBoard(@RequestHeader String auth, @PathVariable("id") long id) {
+        var jwtResult = jwtService.ValidateToken(auth);
+        var err = jwtResult.getFirst();
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        var response = boardService.GetBoard(id);
+        if (!response.getFirst().IsEmpty()){
+            return ResponseEntity.status(response.getFirst().getStatusCode()).body(response.getFirst().getMessage());
+        }
+        return ResponseEntity.ok(response.getSecond());
+    }
+
+    @GetMapping("list")
+    public ResponseEntity<?> GetBoardList(@RequestHeader String auth, @RequestParam("index") int pageindex,
+                                          @RequestParam("limit") int limit){
+        var jwtResult = jwtService.ValidateToken(auth);
+        var err = jwtResult.getFirst();
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        var res = boardService.GetBoardList(limit, pageindex);
+        if (!res.getFirst().IsEmpty()){
+            return ResponseEntity.status(res.getFirst().getStatusCode()).body(res.getFirst().getMessage());
+        }
+        return ResponseEntity.ok(res.getSecond());
     }
 
 }
