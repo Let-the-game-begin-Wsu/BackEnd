@@ -18,24 +18,19 @@ public class BoardService {
     private UserRepository userRepository;
 
     public ErrorDto CreateBoard(MemberDto memberDto, BoardRequestDto requestDto) {
-        if (memberDto.IsEmpty()){
-            return ErrorDto.builder().StatusCode(403).Message("bad token").build();
-        }
-        if (requestDto == null){
+        if (requestDto == null) {
             return ErrorDto.builder().StatusCode(400).Message("bad req").build();
         }
-        var memberEntity = userRepository.findById(memberDto.getUser_id());
-        if (memberEntity.isEmpty()){
+        if (!userRepository.existsById(memberDto.getUser_id())){
             return ErrorDto.builder().StatusCode(404).Message("member not found").build();
         }
-
+        var memberEntity = userRepository.getReferenceById(memberDto.getUser_id());
         var entity = BoardEntity.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getComment())
-                .user(memberEntity.get())
+                .user(memberEntity)
                 .uptime(new Date().getTime())
                 .build();
-
         repository.saveAndFlush(entity);
         return ErrorDto.Empty();
     }
@@ -48,7 +43,7 @@ public class BoardService {
         var entity = repository.getReferenceById(boardId);
         var userEntity = entity.getUser();
         var user = BoardDetailUserDto.builder()
-                .id(userEntity.getUser_id())
+                .id(userEntity.getUserId())
                 .nickname(userEntity.getNickname())
                 .image(userEntity.getImage())
                 .build();
@@ -56,7 +51,7 @@ public class BoardService {
                 .content(entity.getContent())
                 .uptime(entity.getUptime())
                 .title(entity.getTitle())
-                .id(entity.getBoard_id())
+                .id(entity.getBoardId())
                 .build();
         var response = BoardDetailDto.builder()
                 .content(content)
@@ -72,15 +67,42 @@ public class BoardService {
         }
         var list =repository.GetBoardList(listLimit, offset).stream().map(
                 x -> BoardListItemDto.builder()
-                        .userId(x.getUser().getUser_id())
+                        .userId(x.getUser().getUserId())
                         .userNick(x.getUser().getNickname())
                         .uptime(x.getUptime())
-                        .id(x.getBoard_id())
+                        .id(x.getBoardId())
                         .title(x.getTitle())
                         .build()
         ).toList();
         var count = repository.GetBoardCount();
         var response = BoardListDto.builder().boardCount(count).items(list).pageIndex(pageIndex).build();
         return Pair.of(ErrorDto.Empty(), response);
+    }
+
+    public ErrorDto RemoveBoard(MemberDto memberDto, Long boardId){
+        var entity = repository.findById(boardId);
+        if (entity.isEmpty()){
+            return ErrorDto.builder().StatusCode(404).Message("board not found").build();
+        }
+        if (!memberDto.getUser_id().equals(entity.get().getUser().getUserId())){
+            return ErrorDto.builder().StatusCode(403).Message("bad auth").build();
+        }
+        repository.deleteById(boardId);
+        return ErrorDto.Empty();
+    }
+
+    public ErrorDto UpdateBoard(MemberDto memberDto, Long boardId, BoardRequestDto requestDto){
+        var entity = repository.findById(boardId);
+        if (entity.isEmpty()){
+            return ErrorDto.builder().StatusCode(404).Message("board not found").build();
+        }
+        if (!memberDto.getUser_id().equals(entity.get().getUser().getUserId())){
+            return ErrorDto.builder().StatusCode(403).Message("bad auth").build();
+        }
+        var result = entity.get();
+        result.setTitle(requestDto.getTitle());
+        result.setContent(requestDto.getComment());
+        repository.saveAndFlush(result);
+        return ErrorDto.Empty();
     }
 }

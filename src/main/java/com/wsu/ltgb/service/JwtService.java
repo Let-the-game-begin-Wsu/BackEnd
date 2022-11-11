@@ -18,7 +18,7 @@ public class JwtService {
 
     public Pair<ErrorDto, String> CreateToken(UserEntity user){
         if (user == null
-                || user.getUser_id() <= 0
+                || user.getUserId() <= 0
                 || user.getNickname() == null
         ){
             return Pair.of(ErrorDto.builder().StatusCode(404).Message("user not found").build(), "");
@@ -29,7 +29,7 @@ public class JwtService {
         var token = JWT.create()
                 .withIssuedAt(date)
                 .withExpiresAt(new Date(date.getTime() + 86400000))
-                .withClaim("user_id", user.getUser_id())
+                .withClaim("user_id", user.getUserId())
                 .withClaim("nickname", user.getNickname())
                 .withClaim("image", user.getImage())
                 .sign(algorithm);

@@ -59,4 +59,32 @@ public class BoardController {
         return ResponseEntity.ok(res.getSecond());
     }
 
+    @PostMapping("upadte/{id}")
+    public ResponseEntity<?> UpdateBoard(@RequestHeader String auth, @PathVariable("id") long id,
+                                         @RequestBody BoardRequestDto requestDto) {
+        var jwtResult = jwtService.ValidateToken(auth);
+        var err = jwtResult.getFirst();
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        err = boardService.UpdateBoard(jwtResult.getSecond(), id, requestDto);
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        return ResponseEntity.ok(true);
+    }
+
+    @PostMapping("delete/{id}")
+    public ResponseEntity<?> DeleteBoard(@RequestHeader String auth, @PathVariable("id") long id) {
+        var jwtResult = jwtService.ValidateToken(auth);
+        var err = jwtResult.getFirst();
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        err = boardService.RemoveBoard(jwtResult.getSecond(), id);
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        return ResponseEntity.ok(true);
+    }
 }

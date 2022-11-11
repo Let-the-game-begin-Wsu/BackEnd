@@ -16,7 +16,8 @@ import javax.persistence.*;
 public class BoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long board_id;
+    @Column(name = "board_id", nullable = false, unique = true, updatable = false)
+    private long boardId;
     @Column(name = "title", nullable = false)
     private String title;
     @ManyToOne
