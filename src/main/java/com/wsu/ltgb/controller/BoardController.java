@@ -28,4 +28,5 @@ public class BoardController {
         }
         return ResponseEntity.ok(true);
     }
+
 }

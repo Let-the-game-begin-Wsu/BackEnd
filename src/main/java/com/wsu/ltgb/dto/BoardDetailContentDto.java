@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class BoardDetailDto {
+public class BoardDetailContentDto {
     private final long id;
     private final String title;
     private final String content;
