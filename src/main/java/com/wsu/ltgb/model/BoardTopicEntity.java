@@ -26,4 +26,7 @@ public class BoardTopicEntity {
     private String image;
     @Column(name = "uptime", nullable = false)
     private long uptime;
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private UserEntity user;
 }
