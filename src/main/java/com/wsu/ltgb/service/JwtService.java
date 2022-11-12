@@ -29,7 +29,7 @@ public class JwtService {
         var token = JWT.create()
                 .withIssuedAt(date)
                 .withExpiresAt(new Date(date.getTime() + 86400000))
-                .withClaim("user_id", user.getId())
+                .withClaim("user_id", user.getUser_id())
                 .withClaim("nickname", user.getNickname())
                 .withClaim("image", user.getImage())
                 .sign(algorithm);

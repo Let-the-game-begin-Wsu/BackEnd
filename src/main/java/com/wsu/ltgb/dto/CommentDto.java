@@ -1,12 +1,13 @@
 package com.wsu.ltgb.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class CommentDto {
-    public final long user_id;
+    public final Long user_id;
+    public final String user_nick;
+    public final String user_image;
     public final String content;
-    public final long board_id;
-    public final long board_comment_id;
-
 }

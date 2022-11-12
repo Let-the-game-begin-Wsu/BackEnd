@@ -1,9 +1,7 @@
 package com.wsu.ltgb.service;
 
-import com.wsu.ltgb.controller.CommentController;
 import com.wsu.ltgb.dto.*;
 import com.wsu.ltgb.model.BoardCommentEntity;
-import com.wsu.ltgb.model.BoardEntity;
 import com.wsu.ltgb.persistence.BoardCommentRepository;
 import com.wsu.ltgb.persistence.BoardRepository;
 import com.wsu.ltgb.persistence.UserRepository;
@@ -19,34 +17,38 @@ public class CommentService {
 
     @Autowired
     private BoardCommentRepository repository;
+    @Autowired
     private BoardRepository boardRepository;
+    @Autowired
     private UserRepository userRepository;
-    public ErrorDto Comment(CommentDto commentDto, MemberDto memberDto){
-        if (commentDto == null){
-            return ErrorDto.builder().StatusCode(400).Message("dto is null").build();
+    public ErrorDto Comment(String comment, MemberDto memberDto, Long board_id){
+        if (comment == null){
+            return ErrorDto.builder().StatusCode(400).Message("comment is null").build();
         }
-        if(!userRepository.existsById(commentDto.user_id)) {
-            var err =ErrorDto.builder().StatusCode(404).Message("").build();
-            return err;
+        if(!userRepository.existsById(memberDto.getUser_id())) {
+            return ErrorDto.builder().StatusCode(404).Message("member not found").build();
         }
-        if(!boardRepository.existsById(commentDto.board_id)) {
-            var err =ErrorDto.builder().StatusCode(404).Message("").build();
-            return err;
+        if(!boardRepository.existsById(board_id)) {
+            return ErrorDto.builder().StatusCode(404).Message("").build();
         }
         var memberEntity = userRepository.findById(memberDto.getUser_id());
-        var boardEntity = boardRepository.findById(commentDto.getBoard_id());
-        if (memberEntity.isPresent()){
-            return ErrorDto.builder().StatusCode(403).Message("bad token").build();
+        var boardEntity = boardRepository.findById(board_id);
+        if (memberEntity.isEmpty()){
+            return ErrorDto.builder().StatusCode(404).Message("member not found").build();
+        }
+        if (boardEntity.isEmpty()){
+            return ErrorDto.builder().StatusCode(404).Message("board not found").build();
         }
         var entity= BoardCommentEntity.builder()
                 .user(memberEntity.get())
                 .board(boardEntity.get())
                 .uptime(new Date().getTime())
-                .content(commentDto.getContent())
+                .content(comment)
                 .build();
         repository.saveAndFlush(entity);
-        return null;
+        return ErrorDto.Empty();
     }
+
     public Pair<ErrorDto, CommentDetailDto>GetComment(long boardId){
         if(repository.existsById(boardId)){
             var err = ErrorDto.builder().StatusCode(404).Message("board not found").build();
