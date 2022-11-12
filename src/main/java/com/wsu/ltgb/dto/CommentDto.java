@@ -6,7 +6,4 @@ import lombok.Data;
 public class CommentDto {
     public final long user_id;
     public final String content;
-    public final long board_id;
-    public final long board_comment_id;
-
 }

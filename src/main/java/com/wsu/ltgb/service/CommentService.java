@@ -25,24 +25,18 @@ public class CommentService {
         if (commentDto == null){
             return ErrorDto.builder().StatusCode(400).Message("dto is null").build();
         }
-        if(!userRepository.existsById(commentDto.user_id)) {
-            var err =ErrorDto.builder().StatusCode(404).Message("").build();
+        if(!userRepository.existsById(memberDto.getUser_id())) {
+            var err =ErrorDto.builder().StatusCode(404).Message("not user_id").build();
             return err;
         }
-        if(!boardRepository.existsById(commentDto.board_id)) {
-            var err =ErrorDto.builder().StatusCode(404).Message("").build();
-            return err;
-        }
-        var memberEntity = userRepository.findById(memberDto.getUser_id());
-        var boardEntity = boardRepository.findById(commentDto.getBoard_id());
-        if (memberEntity.isPresent()){
-            return ErrorDto.builder().StatusCode(403).Message("bad token").build();
-        }
+        var memberEntity = userRepository.getReferenceById(memberDto.getUser_id());
+//        if (memberEntity.isPresent()){
+//            return ErrorDto.builder().StatusCode(403).Message("bad token").build();
+//        }
         var entity= BoardCommentEntity.builder()
-                .user(memberEntity.get())
-                .board(boardEntity.get())
-                .uptime(new Date().getTime())
+                .user(memberEntity)
                 .content(commentDto.getContent())
+                .uptime(new Date().getTime())
                 .build();
         repository.saveAndFlush(entity);
         return null;
@@ -52,17 +46,19 @@ public class CommentService {
             var err = ErrorDto.builder().StatusCode(404).Message("board not found").build();
             return Pair.of(err, CommentDetailDto.builder().build());
         }
+//        if(!boardRepository.existsById(commentDto.board_id)) {
+//            var err =ErrorDto.builder().StatusCode(404).Message("").build();
+//            return err;
+//        }
         var entity = repository.getReferenceById(boardId);
-        var userEntity = entity.getUser();
+        var boardCommentEntity = entity.getBoard();
         var user = CommentDetailUserDto.builder()
-                .id(userEntity.getUser_id())
-                .nickname(userEntity.getNickname())
-                .image(userEntity.getImage())
+                .id(boardCommentEntity.getBoard_id())
                 .build();
         var content=CommentDetailContentDto.builder()
                 .content(entity.getContent())
                 .uptime(entity.getUptime())
-                .id(entity.getBoard_comment_id())
+//                .id(entity.getBoard_comment_id())
                 .build();
         var response = CommentDetailDto.builder()
                 .content(content)

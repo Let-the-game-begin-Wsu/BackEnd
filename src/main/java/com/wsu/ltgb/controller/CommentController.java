@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/api/board")
+@RequestMapping("/api/comment")
 public class CommentController {
 
     @Autowired
@@ -20,7 +20,7 @@ public class CommentController {
     private JwtService jwtService;
 
 
-    @PostMapping("comment")
+    @PostMapping("write/{comment}")
     public ResponseEntity<?> Comment(@RequestHeader String auth, @RequestBody CommentDto commentDto){
         var jwtResult = jwtService.ValidateToken(auth);
         var err = jwtResult.getFirst();
