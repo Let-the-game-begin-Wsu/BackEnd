@@ -20,6 +20,9 @@ public class BoardTopicService {
     private UserRepository userRepository;
 
     public ErrorDto CreateTopic(MemberDto memberDto, BoardTopicDto request){
+        if (CheckTitle(request.getTitle())){
+            return ErrorDto.builder().StatusCode(409).Message("check title").build();
+        }
         var user = userRepository.getReferenceById(memberDto.getUser_id());
         var entity = BoardTopicEntity.builder()
                 .title(request.getTitle())
@@ -80,6 +83,10 @@ public class BoardTopicService {
                 .pageIndex(pageIndex)
                 .items(items)
                 .build();
+    }
+
+    public Boolean CheckTitle(String title){
+        return repository.CheckTitle(title) <= 0;
     }
 }
 

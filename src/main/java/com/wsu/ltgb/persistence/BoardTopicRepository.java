@@ -12,6 +12,8 @@ import java.util.ArrayList;
 public interface BoardTopicRepository extends JpaRepository<BoardTopicEntity, Long> {
     @Query(value = "SELECT COUNT(*) FROM board_topic", nativeQuery = true)
     Long GetTopicCount();
+    @Query(value = "SELECT COUNT(*) FROM board_topic WHERE title = :title", nativeQuery = true)
+    Long CheckTitle(@Param("title")String title);
     @Query(value = "SELECT * FROM board_topic ORDER BY uptime DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
     ArrayList<BoardTopicEntity> GetTopicList(@Param("limit")int limit, @Param("offset")long offset);
 }

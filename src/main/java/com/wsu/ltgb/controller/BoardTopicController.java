@@ -65,4 +65,9 @@ public class BoardTopicController {
         var resp = service.GetList(limit, pageIndex);
         return ResponseEntity.ok(resp);
     }
+
+    @PostMapping("checkTitle/{title}")
+    public ResponseEntity<?> CheckTitle(@PathVariable String title){
+        return ResponseEntity.ok(service.CheckTitle(title));
+    }
 }
