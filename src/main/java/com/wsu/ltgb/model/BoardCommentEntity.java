@@ -16,7 +16,8 @@ import javax.persistence.*;
 public class BoardCommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long board_comment_id;
+    @Column(name = "board_comment_id", nullable = false, unique = true, updatable = false)
+    private long boardCommentId;
     @ManyToOne
     @JoinColumn(name="user_id")
     private UserEntity user;
