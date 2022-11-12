@@ -20,7 +20,7 @@ public class BoardTopicService {
     private UserRepository userRepository;
 
     public ErrorDto CreateTopic(MemberDto memberDto, BoardTopicDto request){
-        if (CheckTitle(request.getTitle())){
+        if (!CheckTitle(request.getTitle())){
             return ErrorDto.builder().StatusCode(409).Message("check title").build();
         }
         var user = userRepository.getReferenceById(memberDto.getUser_id());
