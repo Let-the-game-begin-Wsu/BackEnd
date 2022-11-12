@@ -15,15 +15,75 @@ public class BoardController {
     @Autowired
     private JwtService jwtService;
 
-    @PostMapping("write")
-    public ResponseEntity<?> CreateBoard(@RequestHeader String auth, @RequestBody BoardRequestDto board) {
+    @PostMapping("write/{topic}")
+    public ResponseEntity<?> CreateBoard(@RequestHeader String auth, @RequestBody BoardRequestDto board,
+                                         @PathVariable("topic") Long topicId) {
         var jwtResult = jwtService.ValidateToken(auth);
         var err = jwtResult.getFirst();
         if (!err.IsEmpty()) {
             return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
         }
         var member = jwtResult.getSecond();
-        if (!boardService.CreateBoard(member, board).IsEmpty()) {
+        err = boardService.CreateBoard(member, board, topicId);
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        return ResponseEntity.ok(true);
+    }
+
+    @GetMapping("get/{id}")
+    public ResponseEntity<?> GetBoard(@RequestHeader String auth, @PathVariable("id") long id) {
+        var jwtResult = jwtService.ValidateToken(auth);
+        var err = jwtResult.getFirst();
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        var response = boardService.GetBoard(id);
+        if (!response.getFirst().IsEmpty()){
+            return ResponseEntity.status(response.getFirst().getStatusCode()).body(response.getFirst().getMessage());
+        }
+        return ResponseEntity.ok(response.getSecond());
+    }
+
+    @GetMapping("list/{topic}")
+    public ResponseEntity<?> GetBoardList(@RequestHeader String auth, @RequestParam("index") int pageindex,
+                                          @RequestParam("limit") int limit, @PathVariable("topic") Long topicId){
+        var jwtResult = jwtService.ValidateToken(auth);
+        var err = jwtResult.getFirst();
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        var res = boardService.GetBoardList(topicId, limit, pageindex);
+        if (!res.getFirst().IsEmpty()){
+            return ResponseEntity.status(res.getFirst().getStatusCode()).body(res.getFirst().getMessage());
+        }
+        return ResponseEntity.ok(res.getSecond());
+    }
+
+    @PostMapping("upadte/{id}")
+    public ResponseEntity<?> UpdateBoard(@RequestHeader String auth, @PathVariable("id") long id,
+                                         @RequestBody BoardRequestDto requestDto) {
+        var jwtResult = jwtService.ValidateToken(auth);
+        var err = jwtResult.getFirst();
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        err = boardService.UpdateBoard(jwtResult.getSecond(), id, requestDto);
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        return ResponseEntity.ok(true);
+    }
+
+    @PostMapping("delete/{id}")
+    public ResponseEntity<?> DeleteBoard(@RequestHeader String auth, @PathVariable("id") long id) {
+        var jwtResult = jwtService.ValidateToken(auth);
+        var err = jwtResult.getFirst();
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        err = boardService.RemoveBoard(jwtResult.getSecond(), id);
+        if (!err.IsEmpty()) {
             return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
         }
         return ResponseEntity.ok(true);
