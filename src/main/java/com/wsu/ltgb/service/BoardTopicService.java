@@ -35,7 +35,7 @@ public class BoardTopicService {
     }
 
     public ErrorDto RemoveTopic(Long topicId){
-        if(!userRepository.existsById(topicId)){
+        if(!repository.existsById(topicId)){
             return ErrorDto.builder().StatusCode(404).Message("topic not found").build();
         }
         repository.deleteById(topicId);
