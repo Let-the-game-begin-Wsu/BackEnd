@@ -68,6 +68,7 @@ public class BoardTopicService {
         var entityList = repository.GetTopicList(limit, offset);
         var items = entityList.stream().map(
                 x -> BoardTopicDto.builder()
+                        .id(x.getBoardTopicId())
                         .image_url(x.getImage())
                         .title(x.getTitle())
                         .description(x.getDescription())
