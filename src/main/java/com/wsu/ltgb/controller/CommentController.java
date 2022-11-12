@@ -31,18 +31,4 @@ public class CommentController {
         }
         return ResponseEntity.ok(true);
     }
-
-    @GetMapping("get/{id}")
-    public ResponseEntity<?> GetComment(@RequestHeader String auth, @PathVariable("id") long id) {
-        var jwtResult = jwtService.ValidateToken(auth);
-        var err = jwtResult.getFirst();
-        if (!err.IsEmpty()) {
-            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
-        }
-        var response = commentService.GetComment(id);
-        if (!response.getFirst().IsEmpty()){
-            return ResponseEntity.status(response.getFirst().getStatusCode()).body(response.getFirst().getMessage());
-        }
-        return ResponseEntity.ok(response.getSecond());
-    }
 }
