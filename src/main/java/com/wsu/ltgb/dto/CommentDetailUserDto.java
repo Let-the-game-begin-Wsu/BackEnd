@@ -7,6 +7,4 @@ import lombok.Data;
 @Builder
 public class CommentDetailUserDto {
     private final long id;
-    private final String nickname;
-    private final String image;
 }
