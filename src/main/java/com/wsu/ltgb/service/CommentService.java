@@ -48,29 +48,4 @@ public class CommentService {
         repository.saveAndFlush(entity);
         return ErrorDto.Empty();
     }
-
-    public Pair<ErrorDto, CommentDetailDto>GetComment(long boardId){
-        if(repository.existsById(boardId)){
-            var err = ErrorDto.builder().StatusCode(404).Message("board not found").build();
-            return Pair.of(err, CommentDetailDto.builder().build());
-        }
-        var entity = repository.getReferenceById(boardId);
-        var userEntity = entity.getUser();
-        var user = CommentDetailUserDto.builder()
-                .id(userEntity.getUser_id())
-                .nickname(userEntity.getNickname())
-                .image(userEntity.getImage())
-                .build();
-        var content=CommentDetailContentDto.builder()
-                .content(entity.getContent())
-                .uptime(entity.getUptime())
-                .id(entity.getBoard_comment_id())
-                .build();
-        var response = CommentDetailDto.builder()
-                .content(content)
-                .user(user)
-                .build();
-        return Pair.of(ErrorDto.Empty(), response);
-    }
-
 }
