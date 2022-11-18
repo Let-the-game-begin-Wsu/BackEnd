@@ -1,5 +1,6 @@
 package com.wsu.ltgb.controller;
 
+import com.wsu.ltgb.dto.CommentRequestDto;
 import com.wsu.ltgb.service.CommentService;
 import com.wsu.ltgb.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class CommentController {
     private JwtService jwtService;
 
 
-    @PostMapping("comment/{board_id}")
+    @PostMapping("write/{board_id}")
     public ResponseEntity<?> Comment(@RequestHeader String auth, @RequestBody String comment, @PathVariable Long board_id){
         var jwtResult = jwtService.ValidateToken(auth);
         var err = jwtResult.getFirst();
@@ -46,4 +47,19 @@ public class CommentController {
         }
         return  ResponseEntity.ok(res.getSecond());
     }
+    @PostMapping("update")
+    public ResponseEntity<?> UpdateComment(@RequestHeader String auth,
+                                           @RequestBody CommentRequestDto requestDto) {
+        var jwtResult = jwtService.ValidateToken(auth);
+        var err = jwtResult.getFirst();
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        err = commentService.UpdateComment(jwtResult.getSecond(), requestDto);
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        return ResponseEntity.ok(true);
+    }
+
 }

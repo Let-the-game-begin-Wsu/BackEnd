@@ -68,5 +68,18 @@ public class CommentService {
         var response=CommentListDto.builder().CommentCount(count).items(list).pageIndex(pageIndex).build();
         return Pair.of(ErrorDto.Empty(),response);
     }
+    public ErrorDto UpdateComment(MemberDto memberDto, CommentRequestDto requestDto){
+        var entity = repository.findById(requestDto.getContent_id());
+        if (entity.isEmpty()){
+            return ErrorDto.builder().StatusCode(404).Message("board not found").build();
+        }
+        var result = entity.get();
+        if (!memberDto.getUser_id().equals(result.getUser().getUserId())){
+            return ErrorDto.builder().StatusCode(403).Message("bad auth").build();
+        }
+        result.setContent(requestDto.getContent());
+        repository.saveAndFlush(result);
+        return ErrorDto.Empty();
+    }
 
 }
