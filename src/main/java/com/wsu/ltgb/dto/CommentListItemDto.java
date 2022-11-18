@@ -5,8 +5,10 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CommentDetailContentDto {
+public class CommentListItemDto {
     private final long id;
     private final String content;
+    private final long userId;
     private final long uptime;
+    private final String nickName;
 }
