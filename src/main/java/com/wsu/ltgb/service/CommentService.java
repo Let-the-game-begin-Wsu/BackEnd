@@ -81,5 +81,16 @@ public class CommentService {
         repository.saveAndFlush(result);
         return ErrorDto.Empty();
     }
+    public ErrorDto RemoveComment(MemberDto memberDto, Long boardCommentId){
+        var entity = repository.findById(boardCommentId);
+        if (entity.isEmpty()){
+            return ErrorDto.builder().StatusCode(404).Message("boardComment not found").build();
+        }
+        if (!memberDto.getUser_id().equals(entity.get().getUser().getUserId())){
+            return ErrorDto.builder().StatusCode(403).Message("bad auth").build();
+        }
+        repository.deleteById(boardCommentId);
+        return ErrorDto.Empty();
+    }
 
 }

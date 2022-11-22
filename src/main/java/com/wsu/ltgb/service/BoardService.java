@@ -87,6 +87,7 @@ public class BoardService {
         return Pair.of(ErrorDto.Empty(), response);
     }
 
+
     public ErrorDto RemoveBoard(MemberDto memberDto, Long boardId){
         var entity = repository.findById(boardId);
         if (entity.isEmpty()){

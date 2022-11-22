@@ -61,5 +61,18 @@ public class CommentController {
         }
         return ResponseEntity.ok(true);
     }
+    @PostMapping("delete/{id}")
+    public ResponseEntity<?> DeleteComment(@RequestHeader String auth, @PathVariable("id") long id) {
+        var jwtResult = jwtService.ValidateToken(auth);
+        var err = jwtResult.getFirst();
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        err = commentService.RemoveComment(jwtResult.getSecond(), id);
+        if (!err.IsEmpty()) {
+            return ResponseEntity.status(err.getStatusCode()).body(err.getMessage());
+        }
+        return ResponseEntity.ok(true);
+    }
 
 }
