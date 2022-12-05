@@ -23,6 +23,11 @@ public class ChatMessageEntity {
     @Column(name = "uptime", nullable = false)
     private Long uptime;
     @ManyToOne
-    @JoinColumn(name="chat_member_id", nullable = false)
-    private ChatMemberEntity chatMember;
+    @JoinColumn(name="user_id")
+    private UserEntity user;
+    @ManyToOne
+    @JoinColumn(name="chat_room_id", nullable = false)
+    private ChatRoomEntity chatRoom;
+    @Column(name = "type_code", nullable = false)
+    private Integer typeCode;
 }
